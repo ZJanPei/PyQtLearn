@@ -48,7 +48,7 @@ class MatplotlibWidget(QWidget):
         super(MatplotlibWidget, self).__init__(parent)
         self.initUi()
 
-        self.rt_line = line.Line2D([],[])
+        self.rt_line = line.Line2D([],[], linestyle = '--', color = 'g', marker='*',markeredgecolor='r')
         self.step = 1
         self.t = np.arange(-10, self.step-10, 1)
         self.s =  self.t*2
