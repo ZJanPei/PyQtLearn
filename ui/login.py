@@ -23,7 +23,6 @@ class Login(QMainWindow, Ui_Login):
         self.close()
 
 
-
 if __name__ == '__main__':
     import sys
     from PyQt5.QtWidgets import QApplication
