@@ -19,24 +19,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     '''主界面'''
     def __init__(self):
         super().__init__()
-        self.fig, self.ax1 = plt.subplots()
-        self.scope = Scope(self.ax1)
 
         self.setupUi(self)
 
         self.LoginpushButton.clicked.connect(self.LoginClicked)
 
-        #self.fig, self.ax1 = plt.subplots()
-        #self.scope = Scope(self.ax1)
+        self.paintpushButton.clicked.connect(self.paintBtnClicked)
 
-        self.canvas = FigureCanvas(self.fig)
-        self.horizontalLayout.addWidget(self.canvas)
+        self.paintBtn_1.clicked.connect(self.paintBtn_1Clicked)
 
-        self.ani = animation.FuncAnimation(self.fig, self.scope.update, emitter, interval=10, blit=True)
+        self.paintBtn_2.clicked.connect(self.paintBtn_2Clicked)
 
         self.show()
 
-        self.paintpushButton.clicked.connect(self.paintBtnClicked)
 
     def LoginClicked(self):
         '''处理登录按键，弹出登录对话框'''
@@ -44,51 +39,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.login = Login()
 
     def paintBtnClicked(self):
+        ''' '''
 
-        self.canvas.draw()
+        print('paint button msg rec!')
 
-        #self.ani = animation.FuncAnimation(self.fig, self.scope.update, emitter, interval=10, blit=True)
 
-        #self.fig.savefig("examples.jpg")  
-        #plt.close()
+    def paintBtn_1Clicked(self):
 
-class Scope(object):
-    def __init__(self, ax, maxt=2, dt=0.02):
-        print('Here')
-        self.ax = ax
-        self.dt = dt
-        self.maxt = maxt
-        self.tdata = [0]
-        self.ydata = [0]
-        self.ax.set_ylim(-.1, 1.1)
-        self.ax.set_xlim(0, self.maxt)
-        self.line = Line2D(self.tdata, self.ydata)
-        self.ax.add_line(self.line)
+        self.widget.paintTest()
 
-    def update(self, y):
-        lastt = self.tdata[-1]
-        if lastt > self.tdata[0] + self.maxt:  # reset the arrays
-            self.tdata = [self.tdata[-1]]
-            self.ydata = [self.ydata[-1]]
-            self.ax.set_xlim(self.tdata[0], self.tdata[0] + self.maxt)
-            self.ax.figure.canvas.draw()
+    def paintBtn_2Clicked(self):
 
-        t = self.tdata[-1] + self.dt
-        self.tdata.append(t)
-        self.ydata.append(y)
-        self.line.set_data(self.tdata, self.ydata)
-        return self.line,
-def emitter(p=0.03):
-    'return a random value with probability p, else 0'
-    while True:
-        v = np.random.rand(1)
-        if v > p:
-            yield 0.
-        else:
-            yield np.random.rand(1)
+        self.widget_2.paintTest()
 
-# Fixing random state for reproducibility
-np.random.seed(19680801)
+
+
 
 if __name__ == '__main__':
     import sys
