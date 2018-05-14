@@ -7,6 +7,10 @@ from dataPaint import DataPaint
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
+from matplotlib.lines import Line2D
+import matplotlib.animation as animation
+import numpy as np
+
 import pyqtgraph as pg
 import tushare as ts  
 import datetime
@@ -15,19 +19,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     '''主界面'''
     def __init__(self):
         super().__init__()
+        self.fig, self.ax1 = plt.subplots()
+        self.scope = Scope(self.ax1)
+
         self.setupUi(self)
 
         self.LoginpushButton.clicked.connect(self.LoginClicked)
 
-        self.figure = plt.figure()
-        self.canvas = FigureCanvas(self.figure)
+        #self.fig, self.ax1 = plt.subplots()
+        #self.scope = Scope(self.ax1)
+
+        self.canvas = FigureCanvas(self.fig)
         self.horizontalLayout.addWidget(self.canvas)
 
-        self.paintpushButton.clicked.connect(self.paintBtnClicked)
-
-        self.verticalLayout.addWidget(chart())
+        self.ani = animation.FuncAnimation(self.fig, self.scope.update, emitter, interval=10, blit=True)
 
         self.show()
+
+        self.paintpushButton.clicked.connect(self.paintBtnClicked)
 
     def LoginClicked(self):
         '''处理登录按键，弹出登录对话框'''
@@ -36,67 +45,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def paintBtnClicked(self):
 
-        print('paint msg received.')
-
-        ax = self.figure.add_axes([0.1,0.1,0.8,0.8])
-        ax.set_xlim([-1,6])
-        ax.set_ylim([-1,6])
-        ax.plot([0,1,2,3,4,5],'o--')
-
-        cavans = FigureCanvas(self.figure)
-
-        #self.canvas = DataPaint.paintLine()
-        
         self.canvas.draw()
 
-        self.figure.savefig("examples.jpg")  
-        plt.close()
-       
-class CandlestickItem(pg.GraphicsObject):
-    def __init__(self, data):
-        pg.GraphicsObject.__init__(self)
-        self.data = data  ## data must have fields: time, open, close, min, max
-        self.generatePicture()
- 
-    def generatePicture(self):
-        self.picture = QtGui.QPicture()
-        p = QtGui.QPainter(self.picture)
-        p.setPen(pg.mkPen('w'))
-        w = (self.data[1][0] - self.data[0][0]) / 3.
-        for (t, open, close, min, max) in self.data:
-            p.drawLine(QtCore.QPointF(t, min), QtCore.QPointF(t, max))
-            if open > close:
-                p.setBrush(pg.mkBrush('g'))
-            else:
-                p.setBrush(pg.mkBrush('r'))
-            p.drawRect(QtCore.QRectF(t-w, open, w*2, close-open))
-        p.end()
- 
-    def paint(self, p, *args):
-        p.drawPicture(0, 0, self.picture)
- 
-    def boundingRect(self):
-        return QtCore.QRectF(self.picture.boundingRect())
+        #self.ani = animation.FuncAnimation(self.fig, self.scope.update, emitter, interval=10, blit=True)
 
-def chart():
-    hist_data = ts.get_hist_data('600519',start='2017-05-01',end='2017-11-24')
-    data_list = []
-    for dates,row in hist_data.iterrows():
-        # 将时间转换为数字
-        date_time = datetime.datetime.strptime(dates,'%Y-%m-%d')
-        print(date_time)
-        #t = date2num(date_time)
-        t = 11
-        # t = dict(enumerate(datetime))
-        open,high,close,low = row[:4]
-        datas = (t,open,close,low,high)
-        data_list.append(datas)
-    #axis_dict = dict(enumerate(axis))
-    item = CandlestickItem(data_list)
-    plt = pg.PlotWidget()
-    plt.addItem(item,)
-    plt.showGrid(x=True,y=True)
-    return plt
+        #self.fig.savefig("examples.jpg")  
+        #plt.close()
+
+class Scope(object):
+    def __init__(self, ax, maxt=2, dt=0.02):
+        print('Here')
+        self.ax = ax
+        self.dt = dt
+        self.maxt = maxt
+        self.tdata = [0]
+        self.ydata = [0]
+        self.ax.set_ylim(-.1, 1.1)
+        self.ax.set_xlim(0, self.maxt)
+        self.line = Line2D(self.tdata, self.ydata)
+        self.ax.add_line(self.line)
+
+    def update(self, y):
+        lastt = self.tdata[-1]
+        if lastt > self.tdata[0] + self.maxt:  # reset the arrays
+            self.tdata = [self.tdata[-1]]
+            self.ydata = [self.ydata[-1]]
+            self.ax.set_xlim(self.tdata[0], self.tdata[0] + self.maxt)
+            self.ax.figure.canvas.draw()
+
+        t = self.tdata[-1] + self.dt
+        self.tdata.append(t)
+        self.ydata.append(y)
+        self.line.set_data(self.tdata, self.ydata)
+        return self.line,
+def emitter(p=0.03):
+    'return a random value with probability p, else 0'
+    while True:
+        v = np.random.rand(1)
+        if v > p:
+            yield 0.
+        else:
+            yield np.random.rand(1)
+
+# Fixing random state for reproducibility
+np.random.seed(19680801)
 
 if __name__ == '__main__':
     import sys

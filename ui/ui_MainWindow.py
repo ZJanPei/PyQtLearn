@@ -33,7 +33,7 @@ class Ui_MainWindow(object):
         self.paintpushButton.setGeometry(QtCore.QRect(30, 40, 75, 23))
         self.paintpushButton.setObjectName("paintpushButton")
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.Analysetab)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(130, 20, 461, 611))
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(130, 20, 971, 611))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -48,6 +48,15 @@ class Ui_MainWindow(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.tabWidget.addTab(self.pygraphtab, "")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.widget = MatplotlibWidget(self.tab)
+        self.widget.setGeometry(QtCore.QRect(220, 20, 841, 241))
+        self.widget.setObjectName("widget")
+        self.widget_2 = MatplotlibWidget(self.tab)
+        self.widget_2.setGeometry(QtCore.QRect(220, 280, 841, 301))
+        self.widget_2.setObjectName("widget_2")
+        self.tabWidget.addTab(self.tab, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1280, 23))
@@ -61,7 +70,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -73,5 +82,7 @@ class Ui_MainWindow(object):
         self.paintpushButton.setText(_translate("MainWindow", "绘制"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Analysetab), _translate("MainWindow", "数据分析"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.pygraphtab), _translate("MainWindow", "绘图"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Page"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
 
+from MatplotlibWidget import MatplotlibWidget
