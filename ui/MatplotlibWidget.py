@@ -24,6 +24,8 @@ class MyMplCanvas(FigureCanvas):
         self.fig = plt.figure()
         # 这里坐标范围的设置是为了满足波形信号的波动范围
         self.rt_ax = plt.subplot(111,xlim=(-10,10), ylim=(-20,20))
+        self.rt_ax.axhline(-5, color="crimson")
+        self.rt_ax.axhline(10, color="crimson")
         #self.rt_ax = plt.subplot(111)
         self.rt_ax.grid(True)
 
@@ -48,7 +50,8 @@ class MatplotlibWidget(QWidget):
         super(MatplotlibWidget, self).__init__(parent)
         self.initUi()
 
-        self.rt_line = line.Line2D([],[], linestyle = '--', color = 'g', marker='*',markeredgecolor='r')
+        #self.rt_line = line.Line2D([],[], linestyle = '--', color = 'g', marker='*',markeredgecolor='r')
+        self.rt_line = line.Line2D([],[],marker='o',linewidth=1.0,markersize = 3.0)
         self.step = 1
         self.t = np.arange(-10, self.step-10, 1)
         self.s =  self.t*2
@@ -78,10 +81,6 @@ class MatplotlibWidget(QWidget):
 
         self.t = np.arange(-10, self.step-10, 1)
         self.s =  self.t*2
-
-        print(self.t)
-        print(self.s)
-        print(self.step)
 
     def plot_init(self):
         self.mpl.rt_ax.add_line(self.rt_line)
